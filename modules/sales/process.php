@@ -35,6 +35,17 @@ $tax_amount     = $_POST['tax_amount'];
 $total          = $_POST['total'];
 
 try {
+
+    $usuario = $_SESSION['username'] ?? 'Sistema';
+
+    $stmtAudit = $conn->prepare("
+        INSERT INTO current_audit_user (username)
+        VALUES (:username)
+    ");
+
+    $stmtAudit->bindParam(':username', $usuario);
+    $stmtAudit->execute();
+
     $conn->beginTransaction();
 
     if (isset($_GET['id'])) {

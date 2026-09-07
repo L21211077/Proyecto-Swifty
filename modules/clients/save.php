@@ -51,7 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Si no hay errores de validación, guarda o actualiza el cliente
     if (empty($errors)) {
         try {
-            if ($client_id) {
+
+    $usuario = $_SESSION['username'] ?? 'Sistema';
+
+    $stmtAudit = $conn->prepare("
+        INSERT INTO current_audit_user (username)
+        VALUES (:username)
+    ");
+
+    $stmtAudit->bindParam(':username', $usuario);
+    $stmtAudit->execute();
+
+    if ($client_id) {
                 // Actualizar cliente existente
                 $stmt = $conn->prepare(
                     "UPDATE clients SET

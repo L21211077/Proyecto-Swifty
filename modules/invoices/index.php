@@ -143,6 +143,42 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <div class="container mt-5">
+        <div class="row mb-4">
+
+    <div class="col-md-3">
+        <select id="tipoBusqueda" class="form-select">
+            <option value="folio">Buscar por Folio</option>
+            <option value="fecha">Buscar por Fecha</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+
+        <!-- Input Folio -->
+        <input 
+            type="text"
+            id="buscarFolio"
+            class="form-control"
+            placeholder="Ingrese número de folio..."
+        >
+
+        <!-- Input Fecha -->
+        <input 
+            type="date"
+            id="buscarFecha"
+            class="form-control"
+            style="display:none;"
+        >
+
+    </div>
+
+    <div class="col-md-2">
+        <button id="btnLimpiar" class="btn btn-secondary w-100">
+            Limpiar
+        </button>
+    </div>
+
+</div>
         <div class="table-responsive">
             <table id="facturasTable" class="styled-table display nowrap">
                 <thead class="table-dark">
@@ -195,31 +231,158 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script>
-        $(document).ready(function () {
-            if (!$.fn.DataTable.isDataTable('#facturasTable')) {
-                $('#facturasTable').DataTable({
-                    dom: '<"row mb-3"<"col-sm-6"l><"col-sm-6 text-end"B>>rt<"row mt-3"<"col-sm-6"i><"col-sm-6"p>>',
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            text: '<i class="fa-solid fa-file-excel me-1"></i> Exportar a Excel',
-                            className: 'btn btn-success'
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            text: '<i class="fa-solid fa-file-pdf me-1"></i> Exportar a PDF',
-                            className: 'btn btn-danger'
-                        }
-                    ],
-                    pageLength: 10,
-                    lengthMenu: [5, 10, 20, 50, 100],
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-                    }
+
+    
+$(document).ready(function () {
+
+    let timeoutBusqueda;
+
+    // Inicializar DataTable
+    let table = $('#facturasTable').DataTable({
+
+        dom: '<"row mb-3"<"col-sm-6"l><"col-sm-6 text-end"B>>rt<"row mt-3"<"col-sm-6"i><"col-sm-6"p>>',
+
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                text: '<i class="fa-solid fa-file-excel me-1"></i> Exportar a Excel',
+                className: 'btn btn-success'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="fa-solid fa-file-pdf me-1"></i> Exportar a PDF',
+                className: 'btn btn-danger'
+            }
+        ],
+
+        pageLength: 10,
+
+        lengthMenu: [5, 10, 20, 50, 100],
+
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+        }
+    });
+
+    // Cambiar tipo de búsqueda
+    $('#tipoBusqueda').on('change', function () {
+
+        let tipo = $(this).val();
+
+        if (tipo === 'folio') {
+
+            $('#buscarFolio').show();
+            $('#buscarFecha').hide().val('');
+
+        } else {
+
+            $('#buscarFolio').hide().val('');
+            $('#buscarFecha').show();
+        }
+
+        buscarFacturas();
+    });
+
+    // Buscar por folio
+    $('#buscarFolio').on('input', function () {
+
+        clearTimeout(timeoutBusqueda);
+
+        timeoutBusqueda = setTimeout(() => {
+
+            buscarFacturas();
+
+        }, 300);
+    });
+
+    // Buscar por fecha
+    $('#buscarFecha').on('change', function () {
+
+        buscarFacturas();
+    });
+
+    // Botón limpiar
+    $('#btnLimpiar').on('click', function () {
+
+        location.reload();
+    });
+
+    // Función AJAX
+    function buscarFacturas() {
+
+        let tipo = $('#tipoBusqueda').val();
+
+        let valor = '';
+
+        if (tipo === 'folio') {
+
+            valor = $('#buscarFolio').val();
+
+        } else {
+
+            valor = $('#buscarFecha').val();
+        }
+
+        $.ajax({
+
+            url: 'searchInvoices.php',
+
+            method: 'GET',
+
+            dataType: 'json',
+
+            data: {
+                tipo: tipo,
+                valor: valor
+            },
+
+            success: function(response) {
+
+                console.log(response);
+
+                table.clear();
+
+                let rows = [];
+
+                response.forEach(function(invoice) {
+
+                    rows.push([
+
+                        invoice.id,
+                        invoice.client_name,
+                        invoice.invoice_number,
+                        invoice.invoice_date,
+                        '$' + parseFloat(invoice.total).toFixed(2),
+
+                        `
+                        <a href="generate.php?id=${invoice.id}&format=pdf&download=1" class="btn btn-sm btn-danger">
+                            PDF
+                        </a>
+
+                        <a href="generate.php?id=${invoice.id}&format=xlsx&download=1" class="btn btn-sm btn-success">
+                            Excel
+                        </a>
+
+                        <a href="generate.php?id=${invoice.id}&format=xml&download=1" class="btn btn-sm btn-primary">
+                            XML
+                        </a>
+                        `
+                    ]);
                 });
+
+                table.clear().rows.add(rows).draw();
+            },
+
+            error: function(xhr, status, error) {
+
+                console.error(error);
+                console.log(xhr.responseText);
             }
         });
-    </script>
+    }
+});
+
+</script>
     <?php require_once '../../includes/footer.php'; ?>
 </body>
 </html>

@@ -17,6 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     if ($relatedSales > 0) {
       $_SESSION['success_message'] = "No se puede eliminar este cliente porque tiene ventas registradas. Elimine o reasigne las ventas antes de continuar.";
     } else {
+        $usuario = $_SESSION['username'] ?? 'Sistema';
+
+$stmtAudit = $conn->prepare("
+    INSERT INTO current_audit_user (username)
+    VALUES (:username)
+");
+
+$stmtAudit->bindParam(':username', $usuario);
+$stmtAudit->execute();
         // Si no hay ventas, ahora sí procede a eliminar
         $stmt = $conn->prepare("DELETE FROM clients WHERE id = :id");
         $stmt->bindParam(':id', $clientId, PDO::PARAM_INT);

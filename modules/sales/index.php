@@ -183,18 +183,40 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="view.php?id=<?php echo $sale['id']; ?>" class="btnDetails">Detalles</a>
+                                        
                                         <?php if ($sale['invoice_id']): ?>
-                                            <!-- SI ESTA FACTURADA SOLO DEJA DETALLES Y MUESTRA BADGE -->
-                                            <span class="badge bg-success ms-1">Facturada</span>
-                                        <?php else: ?>
-                                            <!-- SOLO SI NO ESTA FACTURADA, DEJA EDITAR/ELIMINAR/GENERAR FACTURA -->
-                                            <a href="edit.php?id=<?php echo $sale['id']; ?>" class="btnEdit">Editar</a>
-                                            <button class="btnDelete" onclick="confirmDelete(<?php echo $sale['id']; ?>)">Eliminar</button>
-                                            <a href="/swift_invoice/modules/invoices/invoice.php?sale_id=<?= $sale['id']; ?>" 
-                                               class="btn btn-sm btn-primary ms-1">
-                                               Generar factura
+
+                                            <!-- YA FACTURADA -->
+                                            <a href="/swift_invoice/modules/invoices/view.php?id=<?= $sale['invoice_id']; ?>" 
+                                                class="btn btn-success btn-sm">
+                                                Ver Factura
                                             </a>
-                                        <?php endif; ?>
+
+<?php else: ?>
+
+    <!-- NO FACTURADA -->
+    <a href="edit.php?id=<?php echo $sale['id']; ?>" class="btnEdit">
+        Editar
+    </a>
+
+    <button class="btnDelete" onclick="confirmDelete(<?php echo $sale['id']; ?>)">
+        Eliminar
+    </button>
+
+    <a href="/swift_invoice/modules/invoices/invoice.php?sale_id=<?= $sale['id']; ?>" 
+       class="btn btn-sm btn-primary ms-1">
+       Generar factura
+    </a>
+
+<?php endif; ?>
+
+
+<!-- IMPRIMIR SIEMPRE -->
+<a href="print.php?id=<?php echo $sale['id']; ?>" 
+   target="_blank"
+   class="btn btn-secondary btn-sm">
+   Imprimir
+</a>
                                     </div>
                                 </td>
                             </tr>

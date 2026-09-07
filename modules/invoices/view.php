@@ -60,18 +60,6 @@ $sale_details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">Factura #<?= htmlspecialchars($invoice['invoice_number']); ?></h2>
-        <div>
-            <a href="index.php" class="btn btn-secondary">Volver</a>
-            <a href="generate.php?id=<?= $invoice['id']; ?>" class="btn btn-danger" target="_blank">
-                <i class="fa-solid fa-file-pdf"></i> PDF
-            </a>
-            <a href="generate.php?id=<?= $invoice['id']; ?>" class="btn btn-success" target="_blank">
-                <i class="fa-solid fa-file-excel"></i> Excel
-            </a>
-            <a href="generate.php?id=<?= $invoice['id']; ?>" class="btn btn-primary" target="_blank">
-                <i class="fa-solid fa-file-code"></i> XML
-            </a>
-        </div>
     </div>
     <div class="card-body">
         <div class="invoice-container">

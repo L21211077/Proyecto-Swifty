@@ -9,6 +9,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $conn = $db->connect();
 
     try {
+
+    $usuario = $_SESSION['username'] ?? 'Sistema';
+
+    $stmtAudit = $conn->prepare("
+        INSERT INTO current_audit_user (username)
+        VALUES (:username)
+    ");
+
+    $stmtAudit->bindParam(':username', $usuario);
+    $stmtAudit->execute();
+        
         // Iniciar transacción
         $conn->beginTransaction();
 
