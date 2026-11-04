@@ -8,16 +8,29 @@ $conn = $db->connect();
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrf();
     // Recoger y sanitizar datos
-    $company_id = isset($_POST['company_id']) ? (int) $_POST['company_id'] : null;
-    $business_name = trim($_POST['business_name']);
-    $rfc = trim($_POST['rfc']);
-    $fiscal_address = trim($_POST['fiscal_address']);
-    $phone = trim($_POST['phone'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $legal_representative = trim($_POST['legal_representative'] ?? '');
-    $business_type_id = isset($_POST['business_type_id']) ? (int) $_POST['business_type_id'] : 0;
-    $tax_regime_id = isset($_POST['tax_regime_id']) ? (int) $_POST['tax_regime_id'] : 0;
+    $companyIdInput = $_POST['company_id'] ?? null;
+    $company_id = $companyIdInput === null ? null : filter_var($companyIdInput, FILTER_VALIDATE_INT);
+    if ($companyIdInput !== null && (!$company_id || $company_id < 1)) {
+        http_response_code(400);
+        exit('Identificador de empresa no válido.');
+    }
+    $business_name = trim(postedString('business_name'));
+    $rfc = trim(postedString('rfc'));
+    $fiscal_address = trim(postedString('fiscal_address'));
+    $phone = trim(postedString('phone'));
+    $email = trim(postedString('email'));
+    $legal_representative = trim(postedString('legal_representative'));
+    $businessTypeInput = postedString('business_type_id');
+    $business_type_id = $businessTypeInput === '' ? 0 : filter_var($businessTypeInput, FILTER_VALIDATE_INT);
+    $taxRegimeInput = postedString('tax_regime_id');
+    $tax_regime_id = $taxRegimeInput === '' ? 0 : filter_var($taxRegimeInput, FILTER_VALIDATE_INT);
+    if (($businessTypeInput !== '' && (!$business_type_id || $business_type_id < 1)) ||
+        ($taxRegimeInput !== '' && (!$tax_regime_id || $tax_regime_id < 1))) {
+        http_response_code(400);
+        exit('Catálogo fiscal no válido.');
+    }
 
     // Convertir a mayúsculas los campos clave
     $business_name = mb_strtoupper($business_name, 'UTF-8');
@@ -112,7 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($e->getCode() == 23000) {
                 $_SESSION['company_save_error'] = 'El RFC o correo ya están registrados para otra empresa.';
             } else {
-                $_SESSION['company_save_error'] = 'Error de base de datos: ' . $e->getMessage();
+                error_log('Company save failed: ' . $e->getMessage());
+                $_SESSION['company_save_error'] = 'No se pudo guardar la empresa. Inténtalo de nuevo.';
             }
             if ($company_id) {
                 redirect('/swift_invoice/modules/company/edit.php?id=' . $company_id);

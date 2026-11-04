@@ -275,7 +275,13 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     input.name = 'id';
                     input.value = id;
 
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = 'csrf_token';
+                    csrf.value = <?php echo json_encode(csrfToken()); ?>;
+
                     form.appendChild(input);
+                    form.appendChild(csrf);
                     document.body.appendChild(form);
                     form.submit();
                 }

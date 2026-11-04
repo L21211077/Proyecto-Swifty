@@ -33,33 +33,13 @@ $taxRegimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php
 // Mensaje de éxito si el cliente se guardó bien
 if (isset($_SESSION['success_message'])) {
-  echo '<script>
-        Swal.fire({
-            icon: "success",
-            title: "' . $_SESSION['success_message'] . '",
-            text: "Redirigiendo al listado...",
-            timer: 2000,
-            showConfirmButton: false
-        }).then(() => {
-            window.location.href = "/swift_invoice/modules/clients/";
-        });
-    </script>';
+  echo '<script>Swal.fire({icon:"success",title:' . jsonForScript($_SESSION['success_message']) . ',text:"Redirigiendo al listado...",timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
   unset($_SESSION['success_message']);
 }
 
 // Mensaje de error general si hubo un problema guardando
 if (isset($_SESSION['client_save_error'])) {
-  echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "' . $_SESSION['client_save_error'] . '",
-            confirmButtonText: "OK",
-            didOpen: () => {
-              document.body.style.paddingRight = "0px";
-            }
-        });
-    </script>';
+  echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['client_save_error']) . ',confirmButtonText:"OK",didOpen:() => {document.body.style.paddingRight="0px";}});</script>';
   unset($_SESSION['client_save_error']);
 }
 ?>
@@ -87,6 +67,7 @@ if (isset($_SESSION['client_save_error'])) {
       <div class="card-body px-2 py-2">
         <!-- Formulario principal. POST hacia save.php -->
         <form method="POST" action="save.php">
+            <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
           <div class="row">
             <!-- Campo: Nombre(s) -->
             <div class="col-md-6">
@@ -97,7 +78,7 @@ if (isset($_SESSION['client_save_error'])) {
                   value="<?php echo htmlspecialchars($client['first_name']); ?>" required
                   oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
                 <?php if (isset($errors['first_name'])): ?>
-                  <span class="error-text"><?php echo $errors['first_name']; ?></span>
+                  <span class="error-text"><?php echo e($errors['first_name']); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -109,7 +90,7 @@ if (isset($_SESSION['client_save_error'])) {
                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                   value="<?php echo htmlspecialchars($client['last_name']); ?>" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')" required>
                 <?php if (isset($errors['last_name'])): ?>
-                  <span class="error-text"><?php echo $errors['last_name']; ?></span>
+                  <span class="error-text"><?php echo e($errors['last_name']); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -145,7 +126,7 @@ if (isset($_SESSION['client_save_error'])) {
                 <input type="email" id="email" name="email" class="form-control"
                   value="<?php echo htmlspecialchars($client['email']); ?>">
                 <?php if (isset($errors['email'])): ?>
-                  <span class="error-text"><?php echo $errors['email']; ?></span>
+                  <span class="error-text"><?php echo e($errors['email']); ?></span>
                 <?php endif; ?>
                 <small class="text-danger" id="emailError" style="display:none;">Ingrese un email válido (mínimo 10 caracteres).</small>
               </div>
@@ -188,7 +169,7 @@ if (isset($_SESSION['client_save_error'])) {
                 <input type="text" id="rfc" name="rfc" class="form-control" required maxlength="13" minlength="12"
                   value="<?php echo htmlspecialchars($client['rfc']); ?>">
                 <?php if (isset($errors['rfc'])): ?>
-                  <span class="error-text"><?php echo $errors['rfc']; ?></span>
+                  <span class="error-text"><?php echo e($errors['rfc']); ?></span>
                 <?php endif; ?>
                 <small class="text-danger" id="rfcError" style="display:none;">
                   Ingrese un RFC válido (12-13 caracteres, solo letras mayúsculas y números).

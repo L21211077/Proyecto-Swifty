@@ -65,7 +65,8 @@ if (isset($_SESSION['company_form_errors'])) {
 
         <div class="card-body px-2 py-2">
             <form method="POST" action="save.php">
-                <input type="hidden" name="company_id" value="<?php echo $company_id; ?>">
+                <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
+                <input type="hidden" name="company_id" value="<?php echo e($company_id); ?>">
 
                 <div class="row">
                     <div class="col-md-6">
@@ -75,7 +76,7 @@ if (isset($_SESSION['company_form_errors'])) {
                                 pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                                 value="<?php echo htmlspecialchars($company['business_name']); ?>" required>
                             <?php if (isset($errors['business_name'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['business_name']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['business_name']); ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -86,7 +87,7 @@ if (isset($_SESSION['company_form_errors'])) {
                             <input type="text" id="rfc" name="rfc" class="form-control" maxlength="13" minlength="12"
                                 value="<?php echo htmlspecialchars($company['rfc']); ?>">
                             <?php if (isset($errors['rfc'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['rfc']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['rfc']); ?></span>
                             <?php endif; ?>
                             <small class="text-danger" id="rfcError" style="display:none;">
                                 Ingrese un RFC válido (12-13 caracteres, solo letras mayúsculas y números).
@@ -101,7 +102,7 @@ if (isset($_SESSION['company_form_errors'])) {
                             <label class="input-title" for="fiscal_address">Dirección Fiscal:</label>
                             <textarea id="fiscal_address" name="fiscal_address" class="form-control" rows="3"><?php echo htmlspecialchars($company['fiscal_address']); ?></textarea>
                             <?php if (isset($errors['fiscal_address'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['fiscal_address']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['fiscal_address']); ?></span>
                             <?php endif; ?>
                             <small class="text-danger" id="fiscal_addressError" style="display:none;">Ingrese una dirección válida (mínimo 20 caracteres).</small>
                         </div>
@@ -126,7 +127,7 @@ if (isset($_SESSION['company_form_errors'])) {
                             <input type="email" id="email" name="email" class="form-control"
                                 value="<?php echo htmlspecialchars($company['email']); ?>">
                             <?php if (isset($errors['email'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['email']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['email']); ?></span>
                             <?php endif; ?>
                             <small class="text-danger" id="emailError" style="display:none;">Ingrese un email válido (mínimo 10 caracteres).</small>
                         </div>
@@ -139,7 +140,7 @@ if (isset($_SESSION['company_form_errors'])) {
                                 pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                                 value="<?php echo htmlspecialchars($company['legal_representative']); ?>" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')" required>
                             <?php if (isset($errors['legal_representative'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['legal_representative']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['legal_representative']); ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -158,7 +159,7 @@ if (isset($_SESSION['company_form_errors'])) {
                                 <?php endforeach; ?>
                             </select>
                             <?php if (isset($errors['business_type_id'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['business_type_id']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['business_type_id']); ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -175,7 +176,7 @@ if (isset($_SESSION['company_form_errors'])) {
                                 <?php endforeach; ?>
                             </select>
                             <?php if (isset($errors['tax_regime_id'])): ?>
-                                <span class="error-text text-danger"><?php echo $errors['tax_regime_id']; ?></span>
+                                <span class="error-text text-danger"><?php echo e($errors['tax_regime_id']); ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -237,41 +238,17 @@ document.getElementById('rfc').addEventListener('input', function () {
 
 <?php
 if (isset($_SESSION['success_message'])) {
-    echo '<script>
-        Swal.fire({
-            icon: "success",
-            title: "¡Éxito!",
-            text: "' . $_SESSION['success_message'] . '",
-            timer: 2000,
-            showConfirmButton: false
-        }).then(() => {
-            window.location.href = "/swift_invoice/modules/company/";
-        });
-    </script>';
+    echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/company/";});</script>';
     unset($_SESSION['success_message']);
 }
 
 if (isset($_SESSION['company_fetch_error'])) {
-    echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "' . $_SESSION['company_fetch_error'] . '",
-            confirmButtonText: "OK"
-        });
-    </script>';
+    echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['company_fetch_error']) . ',confirmButtonText:"OK"});</script>';
     unset($_SESSION['company_fetch_error']);
 }
 
 if (isset($_SESSION['company_save_error'])) {
-    echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "' . $_SESSION['company_save_error'] . '",
-            confirmButtonText: "OK"
-        });
-    </script>';
+    echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['company_save_error']) . ',confirmButtonText:"OK"});</script>';
     unset($_SESSION['company_save_error']);
 }
 

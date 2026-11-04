@@ -3,7 +3,12 @@ require_once '../../config/setup.php';
 requireAuth();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $clientId = $_POST['id'];
+    requireCsrf();
+    $clientId = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+    if (!$clientId || $clientId < 1) {
+        http_response_code(400);
+        exit('Identificador de cliente no válido.');
+    }
 
     $db = new Database();
     $conn = $db->connect();

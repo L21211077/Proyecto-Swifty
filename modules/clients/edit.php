@@ -74,11 +74,12 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             <div class="card-body px-2 py-2">
                 <!-- Muestra error general si aplica -->
                 <?php if (isset($errors['general'])): ?>
-                    <div class="alert alert-danger"><?php echo $errors['general']; ?></div>
+                    <div class="alert alert-danger"><?php echo e($errors['general']); ?></div>
                 <?php endif; ?>
 
                 <!-- Formulario principal. POST hacia save.php -->
                 <form method="POST" action="save.php">
+                    <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
                     <input type="hidden" name="client_id" value="<?php echo $client_id; ?>" />
 
                     <div class="row">
@@ -90,7 +91,7 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                                     value="<?php echo htmlspecialchars($client['first_name']); ?>" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')" required>
                                 <?php if (isset($errors['first_name'])): ?>
-                                    <span class="error-text"><?php echo $errors['first_name']; ?></span>
+                                    <span class="error-text"><?php echo e($errors['first_name']); ?></span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -103,7 +104,7 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                     pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                                     value="<?php echo htmlspecialchars($client['last_name']); ?>" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')" required>
                                 <?php if (isset($errors['last_name'])): ?>
-                                    <span class="error-text"><?php echo $errors['last_name']; ?></span>
+                                    <span class="error-text"><?php echo e($errors['last_name']); ?></span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -138,7 +139,7 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 <input type="email" id="email" name="email" class="form-control"
                                     value="<?php echo htmlspecialchars($client['email']); ?>">
                                 <?php if (isset($errors['email'])): ?>
-                                    <span class="error-text"><?php echo $errors['email']; ?></span>
+                                    <span class="error-text"><?php echo e($errors['email']); ?></span>
                                 <?php endif; ?>
                                 <small class="text-danger" id="emailError" style="display:none;">Ingrese un email válido
                                     (mínimo 10 caracteres).</small>
@@ -186,7 +187,7 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                                 <input type="text" id="rfc" name="rfc" class="form-control"
                                     value="<?php echo htmlspecialchars($client['rfc']); ?>">
                                 <?php if (isset($errors['rfc'])): ?>
-                                    <span class="error-text"><?php echo $errors['rfc']; ?></span>
+                                    <span class="error-text"><?php echo e($errors['rfc']); ?></span>
                                 <?php endif; ?>
                                 <small class="text-danger" id="rfcError" style="display:none;">
                                     Ingrese un RFC válido (12-13 caracteres, solo letras mayúsculas y números).
@@ -247,39 +248,15 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <?php
     // SweetAlert2 para mensajes tras guardar/errores (se limpia la sesión después)
     if (isset($_SESSION['success_message'])) {
-        echo '<script>
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "' . $_SESSION['success_message'] . '",
-        timer: 2000,
-        showConfirmButton: false
-      }).then(() => {
-        window.location.href = "/swift_invoice/modules/clients/";
-      });
-    </script>';
+        echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
         unset($_SESSION['success_message']);
     }
     if (isset($_SESSION['client_fetch_error'])) {
-        echo '<script>
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "' . $_SESSION['client_fetch_error'] . '",
-        confirmButtonText: "OK"
-      });
-    </script>';
+        echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['client_fetch_error']) . ',confirmButtonText:"OK"});</script>';
         unset($_SESSION['client_fetch_error']);
     }
     if (isset($_SESSION['client_save_error'])) {
-        echo '<script>
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "' . $_SESSION['client_save_error'] . '",
-        confirmButtonText: "OK"
-      });
-    </script>';
+        echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['client_save_error']) . ',confirmButtonText:"OK"});</script>';
         unset($_SESSION['client_save_error']);
     }
 

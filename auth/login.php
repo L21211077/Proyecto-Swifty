@@ -7,29 +7,36 @@ $conn = $db->connect();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
+    requireCsrf();
+    $username = trim(postedString('username'));
+    $password = postedString('password');
 
-    if (empty($username) || empty($password)) {
+    if ($username === '' || $password === '' || strlen($username) > 50 || strlen($password) > 72) {
         $error = 'Por favor ingrese usuario y contraseña';
     } else {
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
+        $rateLimitKey = loginRateLimitKey();
+        if (isLoginRateLimited($conn, $rateLimitKey)) {
+            http_response_code(429);
+            $error = 'Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.';
+        } else {
+            $stmt = $conn->prepare("SELECT id, username, first_name, password FROM users WHERE username = :username LIMIT 1");
+            $stmt->execute([':username' => $username]);
+            $user = $stmt->fetch();
 
-        if ($stmt->rowCount() === 1) {
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (password_verify($password, $user['password'])) {
+            if ($user && password_verify($password, $user['password'])) {
+                clearLoginAttempts($conn, $rateLimitKey);
+                session_regenerate_id(true);
+                unset($_SESSION['csrf_token']);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['last_activity'] = time();
+                csrfToken();
                 
                 redirect('/swift_invoice/index.php');
-            } else {
-                $error = 'Credenciales incorrectas';
             }
-        } else {
+
+            recordFailedLogin($conn, $rateLimitKey);
             $error = 'Credenciales incorrectas';
         }
     }
@@ -50,10 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>INICIO DE SESIÓN</h2>
         
         <?php if ($error): ?>
-            <div class="alert error"><?php echo $error; ?></div>
+            <div class="alert error"><?php echo e($error); ?></div>
         <?php endif; ?>
         
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
             <div class="form-group">
                 <label for="username">Usuario:</label>
                 <input type="text" id="username" name="username" required>
@@ -68,7 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         
         <div class="auth-links">
-            <a href="register.php">Registrarse</a>
+            <?php if (registrationEnabled()): ?>
+                <a href="register.php">Registrarse</a>
+            <?php endif; ?>
             <a href="reset_password.php">¿Olvidaste tu contraseña?</a>
         </div>
     </div>

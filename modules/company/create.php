@@ -56,30 +56,14 @@ if (isset($_SESSION['company_form_errors'])) {
 
  <?php
     if (isset($_SESSION['success_message'])) {
-      echo '<script>
-        Swal.fire({
-          icon: "success",
-          title: "' . $_SESSION['success_message'] . '",
-          text: "Redirigiendo al listado...",
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => {
-          window.location.href = "/swift_invoice/modules/company/";
-        });
-      </script>';
+      $message = jsonForScript($_SESSION['success_message']);
+      echo '<script>Swal.fire({icon:"success",title:' . $message . ',text:"Redirigiendo al listado...",timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/company/";});</script>';
       unset($_SESSION['success_message']);
     }
 
     if (isset($_SESSION['company_save_error'])) {
-      echo '<script>
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "' . $_SESSION['company_save_error'] . '",
-          confirmButtonText: "OK",
-          didOpen: () => { document.body.style.paddingRight = "0px"; }
-        });
-      </script>';
+      $message = jsonForScript($_SESSION['company_save_error']);
+      echo '<script>Swal.fire({icon:"error",title:"Error",text:' . $message . ',confirmButtonText:"OK",didOpen:() => {document.body.style.paddingRight="0px";}});</script>';
       unset($_SESSION['company_save_error']);
     }
   ?> 
@@ -94,6 +78,7 @@ if (isset($_SESSION['company_form_errors'])) {
       <div class="card-body px-2 py-2">
         <!-- Formulario principal. POST hacia save.php -->
         <form method="POST" action="save.php">
+          <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
           <div class="row">    
           <!-- Campo: Nombre de la Empresa -->
             <div class="col-md-6">
@@ -103,7 +88,7 @@ if (isset($_SESSION['company_form_errors'])) {
                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}" title="Solo letras y espacios"
                   value="<?php echo htmlspecialchars($company['business_name']); ?>" required>
                 <?php if (isset($errors['business_name'])): ?>
-                  <span class="error-text"><?php echo $errors['business_name']; ?></span>
+                  <span class="error-text"><?php echo e($errors['business_name']); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -115,7 +100,7 @@ if (isset($_SESSION['company_form_errors'])) {
                 <input type="text" id="rfc" name="rfc" class="form-control" maxlength="13" minlength="12"
                   value="<?php echo htmlspecialchars($company['rfc']); ?>">
                 <?php if (isset($errors['rfc'])): ?>
-                  <span class="error-text"><?php echo $errors['rfc']; ?></span>
+                  <span class="error-text"><?php echo e($errors['rfc']); ?></span>
                 <?php endif; ?>
                 <small class="text-danger" id="rfcError" style="display:none;">
                   Ingrese un RFC válido (12-13 caracteres, solo letras mayúsculas y números).
@@ -156,7 +141,7 @@ if (isset($_SESSION['company_form_errors'])) {
                 <input type="email" id="email" name="email" class="form-control"
                   value="<?php echo htmlspecialchars($company['email']); ?>">
                 <?php if (isset($errors['email'])): ?>
-                  <span class="error-text"><?php echo $errors['email']; ?></span>
+                  <span class="error-text"><?php echo e($errors['email']); ?></span>
                 <?php endif; ?>
                 <small class="text-danger" id="emailError" style="display:none;">Ingrese un email válido (mínimo 10 caracteres).</small>
               </div>
@@ -170,7 +155,7 @@ if (isset($_SESSION['company_form_errors'])) {
                    pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}"  title="Solo letras y espacios"
                   value="<?php echo htmlspecialchars($company['legal_representative']); ?>" required oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
                 <?php if (isset($errors['legal_representative'])): ?>
-                  <span class="error-text"><?php echo $errors['legal_representative']; ?></span>
+                  <span class="error-text"><?php echo e($errors['legal_representative']); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -191,7 +176,7 @@ if (isset($_SESSION['company_form_errors'])) {
         <?php endforeach; ?>
       </select>
       <?php if (isset($errors['business_type_id'])): ?>
-        <span class="text-danger"><?php echo $errors['business_type_id']; ?></span>
+        <span class="text-danger"><?php echo e($errors['business_type_id']); ?></span>
       <?php endif; ?>
     </div>
   </div>
@@ -210,7 +195,7 @@ if (isset($_SESSION['company_form_errors'])) {
         <?php endforeach; ?>
       </select>
       <?php if (isset($errors['tax_regime_id'])): ?>
-        <span class="text-danger"><?php echo $errors['tax_regime_id']; ?></span>
+        <span class="text-danger"><?php echo e($errors['tax_regime_id']); ?></span>
       <?php endif; ?>
     </div>
   </div>

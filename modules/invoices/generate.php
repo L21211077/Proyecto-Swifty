@@ -11,12 +11,16 @@ function sin_acentos_mayus($str) {
     return strtr($str, $unwanted);
 }
 
-if (!isset($_GET['id']) || !isset($_GET['format'])) {
-    die("PARAMETROS INVALIDOS.");
+$invoiceId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+$format = $_GET['format'] ?? '';
+if (!$invoiceId || $invoiceId < 1 || !is_string($format) ||
+    !in_array(strtolower($format), ['pdf', 'xlsx', 'xml'], true)) {
+    http_response_code(400);
+    exit('Parámetros no válidos.');
 }
 
-$invoice_id = intval($_GET['id']);
-$format = strtolower($_GET['format']);
+$invoice_id = $invoiceId;
+$format = strtolower($format);
 
 $db = new Database();
 $conn = $db->connect();

@@ -100,6 +100,7 @@ if (isset($_SESSION['error_message'])) {
   </div>
   <div class="card-body">
     <form id="sale-form" method="POST" action="process.php?id=<?php echo $sale_id; ?>">
+      <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
       <div class="row mb-4 justify-content-start">
         <div class="col-md-6">
           <!-- Tipo de cliente -->

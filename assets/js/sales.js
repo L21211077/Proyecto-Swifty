@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const opt = document.createElement('option');
             opt.value = prod.id;
             opt.text  = prod.name + ' ($' + Number(prod.price).toFixed(2) + ')';
+            opt.dataset.name = prod.name;
             opt.setAttribute('data-price', prod.price);
             productSelect.appendChild(opt);
         });
@@ -36,10 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
         priceInput.value = selected && selected.getAttribute('data-price') ? selected.getAttribute('data-price') : '';
     });
 
-    addProductBtn.addEventListener('click', function() {
+    addProductBtn.addEventListener('click', async function() {
         const productId = productSelect.value;
-        const productName = productSelect.options[productSelect.selectedIndex]
-            ? productSelect.options[productSelect.selectedIndex].text.split('($')[0].trim()
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        const productName = selectedOption
+            ? selectedOption.dataset.name
             : '';
         const productPrice = parseFloat(priceInput.value);
         const quantity = parseInt(quantityInput.value);
@@ -56,33 +58,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const subtotal = productPrice * quantity;
         const taxAmt = subtotal * (taxRate / 100);
 
-        // Agregar a la tabla
+        try {
+            await saveProductToSession({
+                id: productId,
+                name: productName,
+                price: productPrice,
+                quantity: quantity,
+                tax_rate: taxRate
+            });
+        } catch (error) {
+            alert('No se pudo agregar el producto. Recarga la página e inténtalo de nuevo.');
+            return;
+        }
+
         const rowIndex = productTable.rows.length;
         const row = productTable.insertRow();
         row.setAttribute('data-index', rowIndex);
-        row.innerHTML = `
-            <td>${productName}</td>
-            <td>$${productPrice.toFixed(2)}</td>
-            <td>${quantity}</td>
-            <td>${taxRate.toFixed(2)}%</td>
-            <td>$${(subtotal + taxAmt).toFixed(2)}</td>
-            <td>
-                <button type="button" class="DeleteBtn remove-product">Eliminar</button>
-                <input type="hidden" name="products[${rowIndex}][id]" value="${productId}">
-                <input type="hidden" name="products[${rowIndex}][name]" value="${productName}">
-                <input type="hidden" name="products[${rowIndex}][price]" value="${productPrice}">
-                <input type="hidden" name="products[${rowIndex}][quantity]" value="${quantity}">
-                <input type="hidden" name="products[${rowIndex}][tax_rate]" value="${taxRate}">
-            </td>
-        `;
+        row.insertCell().textContent = productName;
+        row.insertCell().textContent = `$${productPrice.toFixed(2)}`;
+        row.insertCell().textContent = String(quantity);
+        row.insertCell().textContent = `${taxRate.toFixed(2)}%`;
+        row.insertCell().textContent = `$${(subtotal + taxAmt).toFixed(2)}`;
 
-        // Guardar producto en sesión (AJAX)
-        saveProductToSession({
-            id: productId,
-            name: productName,
-            price: productPrice,
-            quantity: quantity,
-            tax_rate: taxRate
+        const actions = row.insertCell();
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'DeleteBtn remove-product';
+        removeButton.textContent = 'Eliminar';
+        actions.appendChild(removeButton);
+
+        [
+            ['id', productId],
+            ['name', productName],
+            ['price', productPrice],
+            ['quantity', quantity],
+            ['tax_rate', taxRate]
+        ].forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `products[${rowIndex}][${name}]`;
+            input.value = value;
+            actions.appendChild(input);
         });
 
         updateTotals();
@@ -93,11 +109,16 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = false;
     });
 
-    productTable.addEventListener('click', function(e) {
+    productTable.addEventListener('click', async function(e) {
         if (e.target.classList.contains('remove-product')) {
             const row = e.target.closest('tr');
             const rowIndex = row.getAttribute('data-index');
-            removeProductFromSession(rowIndex);
+            try {
+                await removeProductFromSession(rowIndex);
+            } catch (error) {
+                alert('No se pudo eliminar el producto. Recarga la página e inténtalo de nuevo.');
+                return;
+            }
             row.remove();
             reindexTableRows();
             updateTotals();
@@ -105,20 +126,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function saveProductToSession(product) {
-        fetch('save_product_session.php', {
+    function sessionRequest(url, body) {
+        const token = document.querySelector('#sale-form input[name="csrf_token"]').value;
+        return fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(product)
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': token
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('La solicitud no fue aceptada.');
+            }
+            return response.json();
         });
     }
 
+    function saveProductToSession(product) {
+        return sessionRequest('save_product_session.php', product);
+    }
+
     function removeProductFromSession(index) {
-        fetch('remove_product_session.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ index: index })
-        });
+        return sessionRequest('remove_product_session.php', { index: index });
     }
 
     function reindexTableRows() {

@@ -211,7 +211,13 @@ $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 input.name = 'id';
                 input.value = clientId;
 
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = 'csrf_token';
+                csrf.value = <?php echo json_encode(csrfToken()); ?>;
+
                 form.appendChild(input);
+                form.appendChild(csrf);
                 document.body.appendChild(form);
                 form.submit();
             }
@@ -229,7 +235,7 @@ $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
         Swal.fire({
             icon: 'error',
             title: 'No se pudo eliminar el cliente',
-            text: <?php echo json_encode($_SESSION['success_message']); ?>,
+            text: <?php echo jsonForScript($_SESSION['success_message']); ?>,
             confirmButtonText: 'Entendido'
         });
     });

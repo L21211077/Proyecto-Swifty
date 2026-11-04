@@ -11,16 +11,27 @@ $conn = $db->connect();
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrf();
     // Recoger y sanitizar datos del formulario
-    $client_id        = isset($_POST['client_id']) ? (int) $_POST['client_id'] : null;
-    $first_name       = mb_strtoupper(trim($_POST['first_name'] ?? ''), 'UTF-8');
-    $last_name        = mb_strtoupper(trim($_POST['last_name'] ?? ''), 'UTF-8');
-    $mother_last_name = mb_strtoupper(trim($_POST['mother_last_name'] ?? ''), 'UTF-8');
-    $phone            = trim($_POST['phone'] ?? '');
-    $email            = trim($_POST['email'] ?? '');
-    $rfc              = mb_strtoupper(trim($_POST['rfc'] ?? ''), 'UTF-8');
-    $address          = mb_strtoupper(trim($_POST['address'] ?? ''), 'UTF-8');
-    $tax_regime_id    = isset($_POST['tax_regime_id']) ? (int) $_POST['tax_regime_id'] : null;
+    $clientIdInput = $_POST['client_id'] ?? null;
+    $client_id = $clientIdInput === null ? null : filter_var($clientIdInput, FILTER_VALIDATE_INT);
+    if ($clientIdInput !== null && (!$client_id || $client_id < 1)) {
+        http_response_code(400);
+        exit('Identificador de cliente no válido.');
+    }
+    $first_name       = mb_strtoupper(trim(postedString('first_name')), 'UTF-8');
+    $last_name        = mb_strtoupper(trim(postedString('last_name')), 'UTF-8');
+    $mother_last_name = mb_strtoupper(trim(postedString('mother_last_name')), 'UTF-8');
+    $phone            = trim(postedString('phone'));
+    $email            = trim(postedString('email'));
+    $rfc              = mb_strtoupper(trim(postedString('rfc')), 'UTF-8');
+    $address          = mb_strtoupper(trim(postedString('address')), 'UTF-8');
+    $taxRegimeInput = postedString('tax_regime_id');
+    $tax_regime_id = $taxRegimeInput === '' ? null : filter_var($taxRegimeInput, FILTER_VALIDATE_INT);
+    if ($taxRegimeInput !== '' && (!$tax_regime_id || $tax_regime_id < 1)) {
+        http_response_code(400);
+        exit('Régimen fiscal no válido.');
+    }
 
     // Validaciones de campos obligatorios y formatos
     if ($first_name === '') {
@@ -113,7 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($e->getCode() == 23000) {
                 $_SESSION['client_save_error'] = 'El email, RFC o datos duplicados ya están registrados';
             } else {
-                $_SESSION['client_save_error'] = 'Error en la base de datos: ' . $e->getMessage();
+                error_log('Client save failed: ' . $e->getMessage());
+                $_SESSION['client_save_error'] = 'No se pudo guardar el cliente. Inténtalo de nuevo.';
             }
             redirect(
                 $client_id
