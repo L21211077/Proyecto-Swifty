@@ -1,6 +1,7 @@
 :root {
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
+    --primary-light: rgba(37, 99, 235, 0.1);
     --secondary: #0ea5e9;
     --text: #e5e7eb;
     --text-light: #9ca3af;
@@ -9,6 +10,82 @@
     --border: #334155;
     --danger: #ef4444;
     --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+}
+
+html[data-ui-scale="90"] {
+    font-size: 90%;
+}
+
+html[data-ui-scale="100"] {
+    font-size: 100%;
+}
+
+html[data-ui-scale="110"] {
+    font-size: 110%;
+}
+
+html[data-accent="black"] {
+    --primary: #111827;
+    --primary-dark: #030712;
+    --primary-light: rgba(17, 24, 39, 0.18);
+    --secondary: #cbd5e1;
+}
+
+html[data-theme="night"] {
+    color-scheme: dark;
+    --text: #e5e7eb;
+    --text-light: #a1a1aa;
+    --light-gray: #1e293b;
+    --gray: #334155;
+    --white: #f8fafc;
+    --bg-dark: #0b1120;
+    --bg-darker: #020617;
+    --card-bg: #111827;
+    --card-hover: #1f2937;
+    --border: #334155;
+    --border-dark: #334155;
+    --border-light: #475569;
+    --shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    --footer-bg: #020617;
+}
+
+html[data-theme="night"] body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text) !important;
+}
+
+html[data-theme="night"] .bg-white,
+html[data-theme="night"] .bg-light,
+html[data-theme="night"] .card,
+html[data-theme="night"] .modal-content,
+html[data-theme="night"] .dropdown-menu {
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+    border-color: var(--border-dark) !important;
+}
+
+html[data-theme="night"] .form-control,
+html[data-theme="night"] .form-select,
+html[data-theme="night"] input,
+html[data-theme="night"] textarea,
+html[data-theme="night"] select {
+    background-color: #0f172a;
+    color: var(--text);
+    border-color: var(--border-dark);
+}
+
+html[data-theme="night"] .table,
+html[data-theme="night"] .table > :not(caption) > * > * {
+    --bs-table-bg: var(--card-bg);
+    --bs-table-color: var(--text);
+    color: var(--text);
+}
+
+html[data-accent="black"] .navbar.bg-primary,
+html[data-accent="black"] .bg-primary,
+html[data-accent="black"] .btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
 }
 
 /* Estilo base */
@@ -27,45 +104,103 @@ body {
     padding: 0 15px;
 }
 
-/* Botón flotante pegado al extremo derecho */
-.logout-floating {
+/* Controles persistentes de configuración y sesión */
+.app-controls {
     position: fixed;
-    top: 0.35rem;
-      right: 0.35rem; /* ← margen derecho real */
-    margin-left: 30px;
-    z-index: 100;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
 }
 
-.logout-btn {
+.app-control-button {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.25rem;
-    width: 150px;
-    height: 30px;
-    border-radius: 10px;
-    background: rgba(250, 0, 0, 0.08);
-    text-decoration: none;
-    color: var(--text-light);
-    border: 1px solid rgba(239, 68, 68, 0.08);
-    border-right: none;
-    transition: all 0.2s ease;
-    box-shadow: -2px 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.logout-btn:hover {
-    background: rgba(239, 68, 68, 0.12);
+    gap: 0.65rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--card-bg);
     color: var(--text);
-    transform: scale(1.1);
-    border-color: rgba(239, 68, 68, 0.2);
+    text-decoration: none;
+    font: inherit;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.logout-icon {
-    font-size: 0.8rem;
+.app-control-button:hover {
+    background: var(--primary);
+    color: var(--text);
+    transform: translateY(-1px);
 }
 
-.logout-text {
-    
+.app-control-button:focus-visible,
+.settings-panel__select:focus-visible {
+    outline: 3px solid rgba(14, 165, 233, 0.55);
+    outline-offset: 2px;
+}
+
+.app-control-button--logout {
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+}
+
+.app-control-button--logout:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+}
+
+.settings-panel[hidden] {
+    display: none;
+}
+
+.settings-panel {
+    width: min(19rem, calc(100vw - 2rem));
+    margin-bottom: 0.25rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    background: var(--card-bg);
+    color: var(--text);
+    box-shadow: var(--shadow);
+}
+
+.settings-panel__title {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.settings-panel__label {
+    display: block;
+    margin: 0.75rem 0 0.35rem;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.settings-panel__select {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-dark);
+    color: var(--text);
+    font: inherit;
+}
+
+.settings-panel__theme {
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 .logout-modal[hidden] {
@@ -194,15 +329,15 @@ body {
     }
 }
 
-@media (max-width: 768px) {
-    .logout-floating {
-        top: 0.2rem;
-        right: 0;
+@media (max-width: 420px) {
+    .app-controls {
+        bottom: max(0.65rem, env(safe-area-inset-bottom));
+        left: max(0.65rem, env(safe-area-inset-left));
     }
-    
-    .logout-btn {
-        width: 24px;
-        height: 24px;
+
+    .app-control-button {
+        min-height: 2.5rem;
+        padding: 0.55rem 0.8rem;
     }
 }
 

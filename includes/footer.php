@@ -6,6 +6,38 @@
     </div>
 </footer>
 
+<aside class="app-controls" aria-label="Controles de la aplicación">
+    <section class="settings-panel" id="settings-panel" aria-labelledby="settings-title" hidden>
+        <h2 class="settings-panel__title" id="settings-title">Configuración</h2>
+
+        <label class="settings-panel__label" for="ui-scale">Tamaño de la interfaz</label>
+        <select class="settings-panel__select" id="ui-scale" data-ui-scale>
+            <option value="90">Compacta (90%)</option>
+            <option value="100">Normal (100%)</option>
+            <option value="110">Grande (110%)</option>
+        </select>
+
+        <label class="settings-panel__label" for="ui-accent">Color de la interfaz</label>
+        <select class="settings-panel__select" id="ui-accent" data-ui-accent>
+            <option value="blue">Azul</option>
+            <option value="black">Negro</option>
+        </select>
+
+        <button class="app-control-button settings-panel__theme" type="button" data-theme-toggle aria-pressed="false">
+            ☾ Activar modo nocturno
+        </button>
+    </section>
+
+    <button class="app-control-button app-control-button--settings" type="button" data-settings-toggle aria-expanded="false" aria-controls="settings-panel">
+        <span aria-hidden="true">⚙</span>
+        <span>Configuración</span>
+    </button>
+    <a href="/swift_invoice/auth/logout.php" class="app-control-button app-control-button--logout">
+        <span aria-hidden="true">↪</span>
+        <span>Cerrar sesión</span>
+    </a>
+</aside>
+
 <div class="logout-modal" id="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title" aria-describedby="logout-modal-description" hidden>
     <div class="logout-modal__card">
         <div class="logout-modal__icon" aria-hidden="true">↪</div>

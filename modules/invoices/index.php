@@ -60,20 +60,6 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
     color: white;
   }
 
-  /* Estilo cerrar sesión */
-  .logout-link {
-    color: #dc3545;
-    border: 1px solid #dc3545;
-    border-radius: 5px;
-    padding: 6px 12px;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .logout-link:hover {
-    background-color: #dc3545;
-    color: white;
-    text-decoration: none;
-  }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-custom py-2 sticky-top">
@@ -98,11 +84,6 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <li><a class="dropdown-item" href="/swift_invoice/modules/sales/">Ventas</a></li>
             <li><a class="dropdown-item" href="/swift_invoice/modules/invoices/">Facturas</a></li>
           </ul>
-        </li>
-
-        <!-- Cerrar sesión -->
-        <li class="nav-item">
-          <a class="nav-link logout-link" href="/swift_invoice/auth/logout.php">Cerrar sesión</a>
         </li>
 
       </ul>

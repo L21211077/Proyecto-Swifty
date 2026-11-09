@@ -9,14 +9,6 @@ require_once 'includes/header.php';
 ?>
 
 <div class="dashboard-container">
-    <!-- Botón flotante para cerrar sesión -->
-    <div class="logout-floating">
-        <a href="/swift_invoice/auth/logout.php" class="logout-btn" title="Cerrar sesión">
-            <span class="logout-icon">🚪 </span>
-            <span class="logout-text">Cerrar Sesión</span>
-        </a>
-    </div>
-
     <!-- Banner de bienvenida con el nombre del usuario -->
     <div class="welcome-banner">
         <h1 class="welcome-heading">

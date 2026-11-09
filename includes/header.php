@@ -8,11 +8,11 @@
     <title><?php echo isset($page_title) ? $page_title : 'Swift Invoice'; ?></title>
     
     <!-- CSS principal del sistema, con control de caché (cache busting) -->
-    <link rel="stylesheet" href="assets/css/main.css?v=<?php echo filemtime('assets/css/main.css'); ?>">
+    <link rel="stylesheet" href="/swift_invoice/assets/css/main.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/main.css'); ?>">
     
     <!-- CSS adicional solo para el dashboard (index.php) -->
     <?php if (basename($_SERVER['PHP_SELF']) == 'index.php'): ?>
-    <link rel="stylesheet" href="assets/css/dashboard.css?v=<?php echo filemtime('assets/css/dashboard.css'); ?>">
+    <link rel="stylesheet" href="/swift_invoice/assets/css/dashboard.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/dashboard.css'); ?>">
     <?php endif; ?>
 
     <!-- Bootstrap CSS desde CDN (útil para componentes y grid responsivo) -->
