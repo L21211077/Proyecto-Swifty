@@ -11,16 +11,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim(postedString('username'));
     $password = postedString('password');
 
-    if ($username === '' || $password === '' || strlen($username) > 50 || strlen($password) > 72) {
-        $error = 'Por favor ingrese usuario y contraseña';
+    if ($username === '' || $password === '' || strlen($username) > 100 || strlen($password) > 72) {
+        $error = 'Por favor ingrese su correo o usuario y contraseña';
     } else {
         $rateLimitKey = loginRateLimitKey();
         if (isLoginRateLimited($conn, $rateLimitKey)) {
             http_response_code(429);
             $error = 'Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.';
         } else {
-            $stmt = $conn->prepare("SELECT id, username, first_name, password FROM users WHERE username = :username LIMIT 1");
-            $stmt->execute([':username' => $username]);
+            $stmt = $conn->prepare(
+                'SELECT id, username, first_name, password
+                 FROM users WHERE username = :username OR email = :email LIMIT 1'
+            );
+            $stmt->execute([':username' => $username, ':email' => $username]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
@@ -63,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
             <div class="form-group">
-                <label for="username">Usuario:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">Correo electrónico o usuario:</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
             </div>
             
             <div class="form-group">

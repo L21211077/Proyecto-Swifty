@@ -477,7 +477,7 @@ function apiRoute($conn, $method, $segments) {
     if ($segments === ['auth', 'login'] && $method === 'POST') {
         apiRequireCsrf();
         $validated = apiValidate(apiJsonBody(), [
-            'username' => ['type' => 'string', 'required' => true, 'max' => 50],
+            'username' => ['type' => 'string', 'required' => true, 'max' => 100],
             'password' => ['type' => 'string', 'required' => true, 'maxBytes' => 72, 'trim' => false]
         ]);
         $rateLimitKey = loginRateLimitKey();
@@ -486,9 +486,12 @@ function apiRoute($conn, $method, $segments) {
         }
         $statement = $conn->prepare(
             'SELECT id, username, first_name, last_name, email, created_at, password
-             FROM users WHERE username = :username LIMIT 1'
+             FROM users WHERE username = :username OR email = :email LIMIT 1'
         );
-        $statement->execute([':username' => $validated['username']]);
+        $statement->execute([
+            ':username' => $validated['username'],
+            ':email' => $validated['username']
+        ]);
         $user = $statement->fetch();
         if (!$user || !password_verify($validated['password'], $user['password'])) {
             recordFailedLogin($conn, $rateLimitKey);

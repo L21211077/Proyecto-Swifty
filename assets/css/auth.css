@@ -42,6 +42,143 @@ body {
   border: 1px solid var(--border-dark);
 }
 
+.register-container {
+  max-width: 650px;
+  padding: 3.75rem 4rem;
+  border-radius: 16px;
+  border-color: #354458;
+  background: #1f2c3d;
+  text-align: left;
+}
+
+.auth-register-page {
+  background: #292e34;
+}
+
+.register-header {
+  margin-bottom: 2rem;
+}
+
+.register-brand {
+  color: #80b7ff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.auth-container.register-container .register-title {
+  margin: 0 0 1.5rem;
+  color: var(--white);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.register-intro {
+  max-width: 34rem;
+  margin: 0 auto 2.75rem;
+  color: #d3deeb;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.register-container .form-group {
+  margin-bottom: 2rem;
+}
+
+.register-container .form-group > label:not(.checkbox-label) {
+  margin-bottom: 0.75rem;
+  color: #dce5f0;
+  font-size: 1.1rem;
+}
+
+.register-container .form-group input:not([type="checkbox"]) {
+  min-height: 64px;
+  padding: 1rem 1.2rem;
+  border-color: #4a586b;
+  border-radius: 8px;
+  background: #374354;
+  font-size: 1.05rem;
+}
+
+.register-container .form-group input:not([type="checkbox"]):focus {
+  border-color: #80b7ff;
+  background: #374354;
+  box-shadow: 0 0 0 3px rgba(128, 183, 255, 0.16);
+}
+
+.register-container .password-field {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.register-container .password-field input {
+  flex: 1;
+  min-width: 0;
+}
+
+.register-container .password-strength {
+  margin-top: 0.85rem;
+}
+
+.register-container .privacy-group .checkbox-label {
+  display: flex;
+  min-height: 0;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #dce5f0;
+}
+
+.register-container .privacy-group .checkbox-label > span {
+  display: block;
+  flex: 1;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.register-container .privacy-group input[type="checkbox"] {
+  display: grid;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  flex-shrink: 0;
+  margin-top: 0.08rem;
+}
+
+.register-container .privacy-group .checkbox-label:has(input:checked) {
+  border: 0;
+  background: transparent;
+}
+
+.register-container .btn {
+  min-height: 72px;
+  margin-top: 0.25rem;
+  background: #2864ed;
+  font-size: 1.25rem;
+}
+
+.register-container .btn:hover {
+  background: #1d4ed8;
+}
+
+.register-container .auth-links {
+  margin-top: 2rem;
+  color: #dce5f0;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.privacy-container {
+  max-width: 760px;
+  text-align: left;
+}
+
 .auth-container h1 {
   margin-bottom: 1rem;
   font-size: 2rem;
@@ -86,6 +223,133 @@ body {
   outline: none;
   border-color: var(--primary);
   background-color: rgba(15, 23, 42, 0.8);
+}
+
+.password-field {
+  position: relative;
+}
+
+.field-hint,
+.form-message,
+.error-text {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
+.form-message.error,
+.error-text {
+  color: var(--danger);
+}
+
+.form-message.success {
+  color: #4ade80;
+}
+
+.password-strength {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.password-strength span {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border-dark);
+}
+
+.password-strength.strength-weak span.filled {
+  background: var(--danger);
+}
+
+.password-strength.strength-medium span.filled {
+  background: #f59e0b;
+}
+
+.password-strength.strength-secure span.filled {
+  background: #4ade80;
+}
+
+.privacy-group .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.45);
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.privacy-group input[type="checkbox"] {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-dark);
+  border-radius: 5px;
+  background-color: rgba(15, 23, 42, 0.8);
+  appearance: none;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.privacy-group input[type="checkbox"]::before {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border: solid var(--white);
+  border-width: 0 0 2px 2px;
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform 0.12s ease-in-out;
+}
+
+.privacy-group input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.privacy-group input[type="checkbox"]:checked::before {
+  transform: translateY(-1px) rotate(-45deg) scale(1);
+}
+
+.privacy-group input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+.privacy-group a,
+.privacy-container a {
+  color: var(--secondary);
+}
+
+.privacy-group a:hover {
+  color: var(--white);
+}
+
+.privacy-container h2 {
+  text-align: center;
+}
+
+.privacy-container h3 {
+  margin: 1.25rem 0 0.4rem;
+  color: var(--white);
+}
+
+.privacy-container p,
+.privacy-container li {
+  color: var(--text-light);
+}
+
+.privacy-container ul {
+  margin: 0.4rem 0 0 1.25rem;
 }
 
 .btn {
@@ -168,4 +432,14 @@ body {
   .auth-container h1 {
     font-size: 1.75rem;
   }
+
+  .register-container {
+    padding: 1.5rem;
+  }
+
+  .register-intro {
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+  }
+
 }

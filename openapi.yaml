@@ -538,7 +538,8 @@ components:
       properties:
         username:
           type: string
-          maxLength: 50
+          description: Nombre de usuario existente o correo electrónico registrado.
+          maxLength: 100
         password:
           type: string
           format: password
