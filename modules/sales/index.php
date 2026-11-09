@@ -110,29 +110,29 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Mensajes de éxito o error (SweetAlert2) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <?php
-    if (isset($_SESSION['success_message'])) {
+    if (isset($_SESSION['sales_success_message'])) {
         echo '<script>
           Swal.fire({
             icon: "success",
-            title: "' . addslashes($_SESSION['success_message']) . '",
+            title: "' . addslashes($_SESSION['sales_success_message']) . '",
             text: "Redirigiendo al listado de ventas...",
             timer: 2000,
             showConfirmButton: false
           });
         </script>';
-        unset($_SESSION['success_message']);
+        unset($_SESSION['sales_success_message']);
     }
-    if (isset($_SESSION['error_message'])) {
+    if (isset($_SESSION['sales_error_message'])) {
         echo '<script>
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: "' . addslashes($_SESSION['error_message']) . '",
+            text: "' . addslashes($_SESSION['sales_error_message']) . '",
             confirmButtonText: "OK",
             didOpen: () => { document.body.style.paddingRight = "0px"; }
           });
         </script>';
-        unset($_SESSION['error_message']);
+        unset($_SESSION['sales_error_message']);
     }
     ?>
 

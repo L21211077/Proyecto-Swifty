@@ -3,6 +3,9 @@
 require_once '../../config/setup.php';
 requireAuth();
 
+$clientDeleteResult = $_SESSION['client_delete_result'] ?? null;
+unset($_SESSION['client_delete_result']);
+
 $page_title = "Clientes - Swift Invoice";
 // Incluye el encabezado HTML estándar
 require_once '../../includes/header.php';
@@ -167,6 +170,19 @@ $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- SweetAlert2 para confirmaciones bonitas -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<?php if (is_array($clientDeleteResult) && isset($clientDeleteResult['status'], $clientDeleteResult['message'])): ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        Swal.fire({
+            icon: <?php echo jsonForScript($clientDeleteResult['status'] === 'success' ? 'success' : 'error'); ?>,
+            title: <?php echo jsonForScript($clientDeleteResult['status'] === 'success' ? 'Cliente eliminado' : 'No se pudo eliminar el cliente'); ?>,
+            text: <?php echo jsonForScript($clientDeleteResult['message']); ?>,
+            confirmButtonText: 'Entendido'
+        });
+    });
+</script>
+<?php endif; ?>
+
 <script>
     // Inicializa DataTables en la tabla de clientes
     $(document).ready(function () {
@@ -226,23 +242,6 @@ $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </script>
 
 </html>
-
-
-<?php if (isset($_SESSION['success_message'])): ?>
-<script>
-    //Alerta de error si quieren eliminar cliente y tiene registro de venta
-    document.addEventListener("DOMContentLoaded", function () {
-        Swal.fire({
-            icon: 'error',
-            title: 'No se pudo eliminar el cliente',
-            text: <?php echo jsonForScript($_SESSION['success_message']); ?>,
-            confirmButtonText: 'Entendido'
-        });
-    });
-</script>
-<?php unset($_SESSION['success_message']); ?>
-<?php endif; ?>
-
 
 <?php
 // Incluye el pie de página y scripts generales

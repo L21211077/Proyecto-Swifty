@@ -21,14 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cerrar sesión - Swift Invoice</title>
+    <link rel="stylesheet" href="../assets/css/auth.css">
 </head>
 <body>
-    <main>
-        <h1>¿Deseas cerrar sesión?</h1>
+    <main class="auth-container logout-confirmation">
+        <h1>SWIFT INVOICE</h1>
+        <h2>Confirmación</h2>
+        <p>Tu sesión se cerrará y volverás a la pantalla de inicio de sesión.</p>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo e(csrfToken()); ?>">
-            <button type="submit">Cerrar sesión</button>
-            <a href="/swift_invoice/">Cancelar</a>
+            <div class="logout-confirmation__actions">
+                <button class="btn" type="submit">Cerrar sesión</button>
+                <a class="logout-confirmation__cancel" href="/swift_invoice/">Cancelar</a>
+            </div>
         </form>
     </main>
 </body>

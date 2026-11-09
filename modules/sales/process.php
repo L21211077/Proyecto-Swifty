@@ -165,7 +165,7 @@ try {
 
     $conn->commit();
     unset($_SESSION['sale_products']);
-    $_SESSION['success_message'] = $isUpdate
+    $_SESSION['sales_success_message'] = $isUpdate
         ? 'Venta actualizada correctamente'
         : 'Venta registrada correctamente';
     redirect($isUpdate
@@ -175,13 +175,13 @@ try {
     if (isset($conn) && $conn instanceof PDO && $conn->inTransaction()) {
         $conn->rollBack();
     }
-    $_SESSION['error_message'] = $e->getMessage();
+    $_SESSION['sales_error_message'] = $e->getMessage();
     redirect($redirectTo);
 } catch (PDOException $e) {
     if (isset($conn) && $conn instanceof PDO && $conn->inTransaction()) {
         $conn->rollBack();
     }
     error_log('Sale processing failed: ' . $e->getMessage());
-    $_SESSION['error_message'] = 'No se pudo procesar la venta. Inténtalo de nuevo.';
+    $_SESSION['sales_error_message'] = 'No se pudo procesar la venta. Inténtalo de nuevo.';
     redirect($redirectTo);
 }

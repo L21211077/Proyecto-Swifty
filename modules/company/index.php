@@ -2,6 +2,9 @@
 require_once '../../config/setup.php';
 requireAuth();
 
+$companyDeleteResult = $_SESSION['company_delete_result'] ?? null;
+unset($_SESSION['company_delete_result']);
+
 $page_title = "Empresas - Swift Invoice";
 require_once '../../includes/header.php';
 
@@ -207,24 +210,21 @@ $companies = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     </script>
-</body>
-</html>
-
-<?php if (isset($_SESSION['success_message'])): ?>
+<?php if (is_array($companyDeleteResult) && isset($companyDeleteResult['status'], $companyDeleteResult['message'])): ?>
 <script>
-    //Alerta de error si quieren eliminar cliente y tiene registro de venta
     document.addEventListener("DOMContentLoaded", function () {
         Swal.fire({
-            icon: 'error',
-            title: 'No se pudo eliminar el cliente',
-            text: <?php echo jsonForScript($_SESSION['success_message']); ?>,
+            icon: <?php echo jsonForScript($companyDeleteResult['status'] === 'success' ? 'success' : 'error'); ?>,
+            title: <?php echo jsonForScript($companyDeleteResult['status'] === 'success' ? 'Empresa eliminada' : 'No se pudo eliminar la empresa'); ?>,
+            text: <?php echo jsonForScript($companyDeleteResult['message']); ?>,
             confirmButtonText: 'Entendido'
         });
     });
 </script>
-<?php unset($_SESSION['success_message']); ?>
 <?php endif; ?>
 
+</body>
+</html>
 
 <?php
 require_once '../../includes/footer.php';

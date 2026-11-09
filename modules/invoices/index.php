@@ -110,34 +110,6 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 </nav>
 
-    <!-- SweetAlert2 para mensajes -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <?php
-    if (isset($_SESSION['success_message'])) {
-        echo '<script>
-          Swal.fire({
-            icon: "success",
-            title: "' . addslashes($_SESSION['success_message']) . '",
-            timer: 1800,
-            showConfirmButton: false
-          });
-        </script>';
-        unset($_SESSION['success_message']);
-    }
-    if (isset($_SESSION['error_message'])) {
-        echo '<script>
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "' . addslashes($_SESSION['error_message']) . '",
-            confirmButtonText: "OK",
-            didOpen: () => { document.body.style.paddingRight = "0px"; }
-          });
-        </script>';
-        unset($_SESSION['error_message']);
-    }
-    ?>
-
     <div class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">Facturas</h2>
     </div>

@@ -32,9 +32,9 @@ $taxRegimes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php
 // Mensaje de éxito si el cliente se guardó bien
-if (isset($_SESSION['success_message'])) {
-  echo '<script>Swal.fire({icon:"success",title:' . jsonForScript($_SESSION['success_message']) . ',text:"Redirigiendo al listado...",timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
-  unset($_SESSION['success_message']);
+if (isset($_SESSION['client_success_message'])) {
+  echo '<script>Swal.fire({icon:"success",title:' . jsonForScript($_SESSION['client_success_message']) . ',text:"Redirigiendo al listado...",timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
+  unset($_SESSION['client_success_message']);
 }
 
 // Mensaje de error general si hubo un problema guardando

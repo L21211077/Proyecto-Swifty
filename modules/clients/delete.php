@@ -20,25 +20,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $relatedSales = $checkStmt->fetchColumn();
 
     if ($relatedSales > 0) {
-      $_SESSION['success_message'] = "No se puede eliminar este cliente porque tiene ventas registradas. Elimine o reasigne las ventas antes de continuar.";
+      $_SESSION['client_delete_result'] = [
+          'status' => 'error',
+          'message' => 'No se puede eliminar este cliente porque tiene ventas registradas. Elimine o reasigne las ventas antes de continuar.'
+      ];
     } else {
         $usuario = $_SESSION['username'] ?? 'Sistema';
 
-$stmtAudit = $conn->prepare("
-    INSERT INTO current_audit_user (username)
-    VALUES (:username)
-");
+        $stmtAudit = $conn->prepare("
+            INSERT INTO current_audit_user (username)
+            VALUES (:username)
+        ");
 
-$stmtAudit->bindParam(':username', $usuario);
-$stmtAudit->execute();
+        $stmtAudit->bindParam(':username', $usuario);
+        $stmtAudit->execute();
         // Si no hay ventas, ahora sí procede a eliminar
         $stmt = $conn->prepare("DELETE FROM clients WHERE id = :id");
         $stmt->bindParam(':id', $clientId, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Cliente eliminado correctamente.";
+            $_SESSION['client_delete_result'] = [
+                'status' => 'success',
+                'message' => 'Cliente eliminado correctamente.'
+            ];
         } else {
-            $_SESSION['success_message'] = "Error al eliminar el cliente.";
+            $_SESSION['client_delete_result'] = [
+                'status' => 'error',
+                'message' => 'Error al eliminar el cliente.'
+            ];
         }
     }
 }

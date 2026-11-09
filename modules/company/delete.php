@@ -6,7 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     requireCsrf();
     $companyId = filter_var($_POST['id'], FILTER_VALIDATE_INT);
     if (!$companyId || $companyId < 1) {
-        $_SESSION['success_message'] = 'Identificador de empresa no válido.';
+        $_SESSION['company_delete_result'] = [
+            'status' => 'error',
+            'message' => 'Identificador de empresa no válido.'
+        ];
         header('Location: index.php');
         exit;
     }
@@ -22,21 +25,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         $relatedSales = $checkStmt->fetchColumn();
 
         if ($relatedSales > 0) {
-            $_SESSION['success_message'] = "No se puede eliminar esta compañía porque tiene ventas registradas. Elimine o reasigne las ventas antes de continuar.";
+            $_SESSION['company_delete_result'] = [
+                'status' => 'error',
+                'message' => 'No se puede eliminar esta compañía porque tiene ventas registradas. Elimine o reasigne las ventas antes de continuar.'
+            ];
         } else {
             $stmt = $conn->prepare("DELETE FROM companies WHERE id = :id");
             $stmt->bindParam(':id', $companyId, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                $_SESSION['success_message'] = "Empresa eliminada correctamente.";
+                $_SESSION['company_delete_result'] = [
+                    'status' => 'success',
+                    'message' => 'Empresa eliminada correctamente.'
+                ];
             } else {
-                $_SESSION['success_message'] = "Error al eliminar la empresa.";
+                $_SESSION['company_delete_result'] = [
+                    'status' => 'error',
+                    'message' => 'Error al eliminar la empresa.'
+                ];
             }
         }
 
     } catch (PDOException $e) {
         error_log('Company delete failed: ' . $e->getMessage());
-        $_SESSION['success_message'] = 'No se pudo eliminar la empresa.';
+        $_SESSION['company_delete_result'] = [
+            'status' => 'error',
+            'message' => 'No se pudo eliminar la empresa.'
+        ];
     }
 }
 

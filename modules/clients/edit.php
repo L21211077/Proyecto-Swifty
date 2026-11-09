@@ -247,9 +247,9 @@ $taxRegimes = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
     <?php
     // SweetAlert2 para mensajes tras guardar/errores (se limpia la sesión después)
-    if (isset($_SESSION['success_message'])) {
-        echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
-        unset($_SESSION['success_message']);
+    if (isset($_SESSION['client_success_message'])) {
+        echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['client_success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/clients/";});</script>';
+        unset($_SESSION['client_success_message']);
     }
     if (isset($_SESSION['client_fetch_error'])) {
         echo '<script>Swal.fire({icon:"error",title:"Error",text:' . jsonForScript($_SESSION['client_fetch_error']) . ',confirmButtonText:"OK"});</script>';

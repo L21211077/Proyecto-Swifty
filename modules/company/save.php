@@ -106,11 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->execute()) {
                 // Éxito: establecemos success_message para la alerta
                 if ($company_id) {
-                    $_SESSION['success_message'] = 'Empresa actualizada correctamente.';
+                    $_SESSION['company_success_message'] = 'Empresa actualizada correctamente.';
                     redirect('/swift_invoice/modules/company/edit.php?id=' . $company_id);
                 } else {
                     // En el caso de CREATE, redirigimos a create.php para disparar tu SweetAlert allí
-                    $_SESSION['success_message'] = 'Empresa creada correctamente.';
+                    $_SESSION['company_success_message'] = 'Empresa creada correctamente.';
                     redirect('/swift_invoice/modules/company/create.php');
                 }
             } else {

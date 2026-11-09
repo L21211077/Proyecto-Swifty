@@ -6,7 +6,7 @@ $db = new Database();
 $conn = $db->connect();
 
 if (!isset($_GET['sale_id'])) {
-    $_SESSION['error_message'] = 'Venta no especificada.';
+    $_SESSION['sales_error_message'] = 'Venta no especificada.';
     header('Location: ../sales/');
     exit;
 }
@@ -19,7 +19,7 @@ $stmt->execute([$sale_id]);
 $sale = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$sale) {
-    $_SESSION['error_message'] = 'Venta no encontrada.';
+    $_SESSION['sales_error_message'] = 'Venta no encontrada.';
     header('Location: ../sales/');
     exit;
 }
@@ -30,7 +30,7 @@ $stmt->execute([$sale_id]);
 $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($invoice) {
-    $_SESSION['error_message'] = 'Esta venta ya está facturada.';
+    $_SESSION['sales_error_message'] = 'Esta venta ya está facturada.';
     header('Location: ../sales/');
     exit;
 }
@@ -48,7 +48,7 @@ $stmt = $conn->prepare("
 ");
 $stmt->execute([$sale_id, $invoice_number]);
 
-$_SESSION['success_message'] = 'Factura generada correctamente.';
+$_SESSION['sales_success_message'] = 'Factura generada correctamente.';
 
 header('Location: ../sales/');
 exit;

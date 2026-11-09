@@ -110,10 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Ejecuta el guardado y redirige según éxito y tipo de operación
             if ($stmt->execute()) {
                 if ($client_id) {
-                    $_SESSION['success_message'] = 'Cliente actualizado correctamente';
+                    $_SESSION['client_success_message'] = 'Cliente actualizado correctamente';
                     redirect('/swift_invoice/modules/clients/edit.php?id=' . $client_id);
                 } else {
-                    $_SESSION['success_message'] = 'Cliente creado correctamente';
+                    $_SESSION['client_success_message'] = 'Cliente creado correctamente';
                     redirect('/swift_invoice/modules/clients/create.php');
                 }
             } else {

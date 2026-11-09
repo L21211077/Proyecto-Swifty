@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     requireCsrf();
     $saleId = filter_var($_POST['id'], FILTER_VALIDATE_INT);
     if (!$saleId || $saleId < 1) {
-        $_SESSION['error_message'] = 'Identificador de venta no válido.';
+        $_SESSION['sales_error_message'] = 'Identificador de venta no válido.';
         header('Location: index.php');
         exit;
     }
@@ -42,13 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
 
         // Confirmar cambios
         $conn->commit();
-        $_SESSION['success_message'] = "Venta eliminada correctamente.";
+        $_SESSION['sales_success_message'] = "Venta eliminada correctamente.";
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
         error_log('Sale delete failed: ' . $e->getMessage());
-        $_SESSION['error_message'] = 'No se pudo eliminar la venta.';
+        $_SESSION['sales_error_message'] = 'No se pudo eliminar la venta.';
     }
 }
 

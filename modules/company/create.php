@@ -55,10 +55,10 @@ if (isset($_SESSION['company_form_errors'])) {
 <body>
 
  <?php
-    if (isset($_SESSION['success_message'])) {
-      $message = jsonForScript($_SESSION['success_message']);
+    if (isset($_SESSION['company_success_message'])) {
+      $message = jsonForScript($_SESSION['company_success_message']);
       echo '<script>Swal.fire({icon:"success",title:' . $message . ',text:"Redirigiendo al listado...",timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/company/";});</script>';
-      unset($_SESSION['success_message']);
+      unset($_SESSION['company_success_message']);
     }
 
     if (isset($_SESSION['company_save_error'])) {

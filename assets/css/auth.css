@@ -131,6 +131,34 @@ body {
   text-decoration: underline;
 }
 
+.logout-confirmation {
+  max-width: 440px;
+}
+
+.logout-confirmation p {
+  margin-bottom: 1.5rem;
+  color: var(--text-light);
+}
+
+.logout-confirmation__actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.logout-confirmation__cancel {
+  display: block;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logout-confirmation__cancel:hover {
+  border-color: var(--primary);
+  color: var(--white);
+}
+
 @media (max-width: 480px) {
   .auth-container {
     padding: 1.5rem;

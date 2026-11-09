@@ -237,9 +237,9 @@ document.getElementById('rfc').addEventListener('input', function () {
 </script>
 
 <?php
-if (isset($_SESSION['success_message'])) {
-    echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/company/";});</script>';
-    unset($_SESSION['success_message']);
+if (isset($_SESSION['company_success_message'])) {
+    echo '<script>Swal.fire({icon:"success",title:"¡Éxito!",text:' . jsonForScript($_SESSION['company_success_message']) . ',timer:2000,showConfirmButton:false}).then(() => {window.location.href="/swift_invoice/modules/company/";});</script>';
+    unset($_SESSION['company_success_message']);
 }
 
 if (isset($_SESSION['company_fetch_error'])) {
