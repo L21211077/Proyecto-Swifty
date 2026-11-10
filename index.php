@@ -14,7 +14,7 @@ require_once 'includes/header.php';
         <h1 class="welcome-heading">
             Bienvenido, 
             <span class="username">
-                <?php echo htmlspecialchars($_SESSION['first_name']); ?>
+                <?php echo e(!empty($_SESSION['first_name']) ? $_SESSION['first_name'] : ($_SESSION['username'] ?? 'usuario')); ?>
             </span>
         </h1>
         <p class="welcome-message">¿En qué podemos ayudarte hoy?</p>
