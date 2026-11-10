@@ -2,11 +2,7 @@
 class Database {
     private $conn;
 
-    public function connect() {
-        if ($this->conn instanceof PDO) {
-            return $this->conn;
-        }
-
+    public function getConnectionSettings() {
         $environment = strtolower(getenv('APP_ENV') ?: 'development');
         $host = getenv('DB_HOST') ?: 'localhost';
         $port = getenv('DB_PORT') ?: '3306';
@@ -28,14 +24,29 @@ class Database {
             $password = '';
         }
 
+        return [
+            'host' => $host,
+            'port' => $port,
+            'database' => $database,
+            'username' => $username,
+            'password' => $password
+        ];
+    }
+
+    public function connect() {
+        if ($this->conn instanceof PDO) {
+            return $this->conn;
+        }
+
+        $settings = $this->getConnectionSettings();
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
-            $host,
-            $port,
-            $database
+            $settings['host'],
+            $settings['port'],
+            $settings['database']
         );
 
-        $this->conn = new PDO($dsn, $username, $password, [
+        $this->conn = new PDO($dsn, $settings['username'], $settings['password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
