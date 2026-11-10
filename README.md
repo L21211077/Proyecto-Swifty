@@ -54,9 +54,9 @@ La autenticación de la API utiliza la sesión PHP de la aplicación; no es una 
 
 ## Respaldos completos en MongoDB Atlas
 
-La conexión reutilizable [`getMongoDatabase`](./config/mongodb.php) usa la librería oficial `mongodb/mongodb`. La base de datos de Atlas predeterminada es `swift_invoice` y puede cambiarse con `MONGODB_DATABASE`. Para respaldar la base MySQL completa, el script CLI [`create_mongodb_backup.php`](./scripts/create_mongodb_backup.php) ejecuta `mysqldump` incluyendo estructura, datos, rutinas, triggers y eventos, y almacena el archivo `.sql` en MongoDB GridFS (`database_backups`, configurable con `MONGODB_BACKUP_BUCKET`). GridFS permite guardar respaldos mayores que el límite de 16 MB de un documento BSON. El snapshot anterior de solo usuarios sigue disponible por separado en [`create_mongodb_snapshot.php`](./scripts/create_mongodb_snapshot.php); no lo uses como respaldo completo.
+La conexión reutilizable [`getMongoDatabase`](./config/mongodb.php) usa la librería oficial `mongodb/mongodb`. La base de datos de Atlas predeterminada es `swift_invoice` y puede cambiarse con `MONGODB_DATABASE`. Para respaldar la base MySQL completa, el script CLI [`create_mongodb_backup.php`](./scripts/create_mongodb_backup.php) ejecuta `mysqldump` incluyendo estructura, datos, rutinas, triggers y eventos, y almacena el archivo `.sql` en MongoDB GridFS (`database_backups`, configurable con `MONGODB_BACKUP_BUCKET`). GridFS permite guardar respaldos mayores que el límite de 16 MB de un documento BSON. Es un respaldo manual puntual, no una réplica ni espejo en tiempo real: los cambios realizados después del respaldo no se reflejan en Atlas hasta la siguiente ejecución. El snapshot anterior de solo usuarios sigue disponible por separado en [`create_mongodb_snapshot.php`](./scripts/create_mongodb_snapshot.php); no lo uses como respaldo completo.
 
-Habilita la extensión PHP `mongodb` compatible con tu versión de PHP, instala `mysqldump` y configura estas variables de entorno fuera del código:
+Habilita la extensión PHP `mongodb` compatible con tu versión de PHP e instala `mysqldump` (XAMPP incluye `C:\xampp\mysql\bin\mysqldump.exe`; el script lo detecta automáticamente en la instalación estándar). Configura las variables de MongoDB en el entorno de PHP o en el archivo `.env` de la raíz, y las variables de MySQL en el entorno del proceso PHP:
 
 - `MONGODB_URI`: cadena de conexión de Atlas, incluyendo usuario y contraseña.
 - `MONGODB_DATABASE`: base de datos de destino (opcional; predeterminada `swift_invoice`).
@@ -64,13 +64,25 @@ Habilita la extensión PHP `mongodb` compatible con tu versión de PHP, instala 
 - `MYSQLDUMP_BIN`: ruta al ejecutable `mysqldump` si no está en `PATH` (por ejemplo, `C:\xampp\mysql\bin\mysqldump.exe` en XAMPP).
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`: configuración de la base MySQL que se respaldará.
 
-Ejecuta desde la raíz del proyecto mediante CLI o una tarea programada, después de configurar también las variables `DB_*` de MySQL:
+La conexión MySQL usa `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`; en desarrollo, si no se configuran, usa `localhost:3306`, `swift_invoice_db`, usuario `root` y contraseña vacía. Ejecuta el respaldo manual desde la raíz del proyecto:
 
 ```sh
 php scripts/create_mongodb_backup.php
 ```
 
-Cada ejecución agrega un respaldo nuevo e imprime su ID. Descárgalo con `php scripts/download_mongodb_backup.php <ID> respaldo.sql` y, desde una instancia MySQL/MariaDB limpia, restáuralo con el cliente `mysql` de la misma instalación (por ejemplo, en `cmd.exe`: `C:\xampp\mysql\bin\mysql.exe --user=USUARIO --password < respaldo.sql`). El dump contiene la estructura, datos y rutinas de esa base; no incluye usuarios/permisos globales del servidor MySQL. Protege los permisos de Atlas: los respaldos contienen todos los datos, incluidas credenciales y hashes almacenados en MySQL. La URI y las contraseñas deben permanecer en variables de entorno; el script usa un archivo temporal de credenciales para `mysqldump` y lo elimina al terminar.
+Cada ejecución agrega un respaldo nuevo e imprime su ID de GridFS. Descárgalo sustituyendo `<ID>` por ese identificador:
+
+```sh
+php scripts/download_mongodb_backup.php <ID> respaldo.sql
+```
+
+Para restaurarlo, usa una instancia MySQL/MariaDB de recuperación y el cliente de la misma instalación (por ejemplo, en `cmd.exe`):
+
+```cmd
+C:\xampp\mysql\bin\mysql.exe --user=USUARIO --password < respaldo.sql
+```
+
+El dump contiene la estructura, datos y rutinas de esa base; no incluye usuarios/permisos globales del servidor MySQL. Protege los permisos de Atlas: los respaldos contienen todos los datos, incluidas credenciales y hashes almacenados en MySQL. No publiques el `.env` ni la URI/contraseñas. El script usa un archivo temporal de credenciales para `mysqldump` y lo elimina al terminar. Ejecuta periódicamente el comando según la frecuencia de respaldo que necesites; no se configura ni ejecuta automáticamente.
 
 ## Configuración de producción y seguridad
 
